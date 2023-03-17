@@ -84,5 +84,15 @@ public class MiddleManService {
 		return String.join(" ", sortedWords);
 	}
 
+	public String reverseString(String input) {
+		String url = basicAppUrl + "/reverse?input=" + input;
+		return restTemplate.getForObject(url, String.class);
+	}
+
+	public String getLastReversedString() {
+		String url = basicAppUrl + "/lastReversed";
+		return restTemplate.getForObject(url, String.class);
+	}
+
 }
 

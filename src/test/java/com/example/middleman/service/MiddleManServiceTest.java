@@ -108,4 +108,29 @@ public class MiddleManServiceTest {
 		mockServer.verify();
 	}
 
+	@Test
+	public void testReverseString() {
+		String input = "hello";
+		String expected = "olleh";
+		mockServer.expect(requestTo("http://basic-app/reverse?input=" + input))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(expected, MediaType.TEXT_PLAIN));
+
+		String result = middleManService.reverseString(input);
+		assertThat(result).isEqualTo(expected);
+		mockServer.verify();
+	}
+
+	@Test
+	public void testGetLastReversedString() {
+		String expected = "dlrow";
+		mockServer.expect(requestTo("http://basic-app/lastReversed"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(expected, MediaType.TEXT_PLAIN));
+
+		String result = middleManService.getLastReversedString();
+		assertThat(result).isEqualTo(expected);
+		mockServer.verify();
+	}
+
 }

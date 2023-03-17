@@ -2,10 +2,7 @@ package com.example.middleman.controller;
 
 import com.example.middleman.service.MiddleManService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class MiddleManController {
@@ -28,6 +25,16 @@ public class MiddleManController {
 	@GetMapping("/hello")
 	public String hello() {
 		return middleManService.getHelloMessage();
+	}
+
+	@GetMapping("/reverse")
+	public String reverseString(@RequestParam String input) {
+		return middleManService.reverseString(input);
+	}
+
+	@GetMapping("/lastReversed")
+	public String getLastReversedString() {
+		return middleManService.getLastReversedString();
 	}
 
 }

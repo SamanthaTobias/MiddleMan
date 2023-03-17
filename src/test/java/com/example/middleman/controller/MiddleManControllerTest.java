@@ -12,10 +12,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class MiddleManControllerTest {
@@ -63,6 +65,25 @@ public class MiddleManControllerTest {
 				.andExpect(content().string(helloMessage));
 
 		Mockito.verify(middleManService).getHelloMessage();
+	}
+
+	@Test
+	public void testReverseString() {
+		String input = "hello";
+		String expected = "olleh";
+		when(middleManService.reverseString(input)).thenReturn(expected);
+		String result = middleManController.reverseString(input);
+
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void testGetLastReversedString() {
+		String expected = "dlrow";
+		when(middleManService.getLastReversedString()).thenReturn(expected);
+		String result = middleManController.getLastReversedString();
+
+		assertEquals(expected, result);
 	}
 
 }
