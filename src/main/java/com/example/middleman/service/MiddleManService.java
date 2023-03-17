@@ -13,10 +13,15 @@ import java.util.stream.Collectors;
 @Service
 public class MiddleManService {
 
-	@Value("${basicapp.url}")
-	private String basicAppUrl;
+	private final RestTemplate restTemplate;
+	private final String basicAppUrl;
 
 	private Effect effect = Effect.NONE;
+
+	public MiddleManService(RestTemplate restTemplate, @Value("${basicapp.url}") String basicAppUrl) {
+		this.restTemplate = restTemplate;
+		this.basicAppUrl = basicAppUrl;
+	}
 
 	public void setName(String name) {
 		callSetNameOnBasicApp(name);
@@ -32,13 +37,11 @@ public class MiddleManService {
 	}
 
 	private void callSetNameOnBasicApp(String name) {
-		RestTemplate restTemplate = new RestTemplate();
 		String url = basicAppUrl + "/setName/" + name;
 		restTemplate.postForObject(url, null, String.class);
 	}
 
 	private String callHelloOnBasicApp() {
-		RestTemplate restTemplate = new RestTemplate();
 		String url = basicAppUrl + "/hello";
 		System.out.println("callHelloOnBasicApp using url " + url);
 		return restTemplate.getForObject(url, String.class);
@@ -52,6 +55,10 @@ public class MiddleManService {
 			case ALPHABETIZE -> applyAlphabetize(message);
 			default -> message;
 		};
+	}
+
+	public Effect getEffect() {
+		return effect;
 	}
 
 	private String applyRandomCase(String message) {
