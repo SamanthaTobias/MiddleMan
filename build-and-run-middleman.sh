@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Build the Maven project
+mvn clean
 mvn package #-Dspring.config.location=classpath:application.properties
 
 # Build the Docker image

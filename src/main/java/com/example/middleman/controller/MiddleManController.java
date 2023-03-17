@@ -1,5 +1,6 @@
-package com.example.middleman;
+package com.example.middleman.controller;
 
+import com.example.middleman.service.MiddleManService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
