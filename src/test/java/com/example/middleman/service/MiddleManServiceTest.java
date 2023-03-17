@@ -54,4 +54,58 @@ public class MiddleManServiceTest {
 		assertThat(result).isEqualTo(helloMessage.toUpperCase());
 		mockServer.verify();
 	}
+
+	@Test
+	public void testGetHelloMessageWithLowercaseEffect() {
+		String helloMessage = "Hello, John!";
+		mockServer.expect(requestTo("http://basic-app/hello"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+
+		middleManService.setEffect("lowercase");
+		String result = middleManService.getHelloMessage();
+		assertThat(result).isEqualTo(helloMessage.toLowerCase());
+		mockServer.verify();
+	}
+
+	@Test
+	public void testGetHelloMessageWithRandomCaseEffect() {
+		String helloMessage = "Hello, John!";
+		mockServer.expect(requestTo("http://basic-app/hello"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+
+		middleManService.setEffect("randomcase");
+		String result = middleManService.getHelloMessage();
+		assertThat(result).isNotEqualTo(helloMessage);
+		assertThat(result.length()).isEqualTo(helloMessage.length());
+		mockServer.verify();
+	}
+
+	@Test
+	public void testGetHelloMessageWithAlphabetizeEffect() {
+		String helloMessage = "The quick brown fox jumps over the lazy dog";
+		mockServer.expect(requestTo("http://basic-app/hello"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+
+		middleManService.setEffect("alphabetize");
+		String result = middleManService.getHelloMessage();
+		assertThat(result).isEqualTo("brown dog fox jumps lazy over quick The the");
+		mockServer.verify();
+	}
+
+	@Test
+	public void testGetHelloMessageWithNoEffect() {
+		String helloMessage = "Hello, John!";
+		mockServer.expect(requestTo("http://basic-app/hello"))
+				.andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+
+		middleManService.setEffect("none");
+		String result = middleManService.getHelloMessage();
+		assertThat(result).isEqualTo(helloMessage);
+		mockServer.verify();
+	}
+
 }

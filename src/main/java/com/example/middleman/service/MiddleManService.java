@@ -80,7 +80,7 @@ public class MiddleManService {
 
 	private String applyAlphabetize(String message) {
 		List<String> words = Arrays.asList(message.split(" "));
-		List<String> sortedWords = words.stream().sorted().collect(Collectors.toList());
+		List<String> sortedWords = words.stream().sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.toList());
 		return String.join(" ", sortedWords);
 	}
 
