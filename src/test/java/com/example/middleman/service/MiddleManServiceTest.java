@@ -3,37 +3,39 @@ package com.example.middleman.service;
 import com.example.middleman.Effect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.client.MockRestServiceServer;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class MiddleManServiceTest {
 
+	@Mock
+	private RestTemplate restTemplate;
+
+	@InjectMocks
 	private MiddleManService middleManService;
-	private MockRestServiceServer mockServer;
 
 	@BeforeEach
 	public void setup() {
-		RestTemplate restTemplate = new RestTemplate();
-		middleManService = new MiddleManService(restTemplate, "http://basic-app");
-		mockServer = MockRestServiceServer.createServer(restTemplate);
+		middleManService.setBasicAppUrl("http://basic-app");
 	}
 
 	@Test
 	public void testSetName() {
 		String name = "John";
-		mockServer.expect(requestTo("http://basic-app/setName/" + name))
-				.andExpect(method(HttpMethod.POST))
-				.andRespond(withSuccess());
+		when(restTemplate.postForObject(eq("http://basic-app/setName/" + name), any(), eq(String.class)))
+				.thenReturn(null);
 
 		middleManService.setName(name);
-		mockServer.verify();
+		verify(restTemplate).postForObject(eq("http://basic-app/setName/" + name), any(), eq(String.class));
 	}
 
 	@Test
@@ -43,94 +45,86 @@ public class MiddleManServiceTest {
 	}
 
 	@Test
-	public void testGetHelloMessage() {
+	public void testGetHelloMessageWithUppercaseEffect() {
 		String helloMessage = "Hello, John!";
-		mockServer.expect(requestTo("http://basic-app/hello"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/hello"), eq(String.class)))
+				.thenReturn(helloMessage);
 
 		middleManService.setEffect("uppercase");
 		String result = middleManService.getHelloMessage();
 		assertThat(result).isEqualTo(helloMessage.toUpperCase());
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/hello"), eq(String.class));
 	}
 
 	@Test
 	public void testGetHelloMessageWithLowercaseEffect() {
 		String helloMessage = "Hello, John!";
-		mockServer.expect(requestTo("http://basic-app/hello"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/hello"), eq(String.class)))
+				.thenReturn(helloMessage);
 
 		middleManService.setEffect("lowercase");
 		String result = middleManService.getHelloMessage();
 		assertThat(result).isEqualTo(helloMessage.toLowerCase());
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/hello"), eq(String.class));
 	}
 
 	@Test
 	public void testGetHelloMessageWithRandomCaseEffect() {
 		String helloMessage = "Hello, John!";
-		mockServer.expect(requestTo("http://basic-app/hello"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/hello"), eq(String.class)))
+				.thenReturn(helloMessage);
 
 		middleManService.setEffect("randomcase");
 		String result = middleManService.getHelloMessage();
 		assertThat(result).isNotEqualTo(helloMessage);
 		assertThat(result.length()).isEqualTo(helloMessage.length());
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/hello"), eq(String.class));
 	}
 
 	@Test
 	public void testGetHelloMessageWithAlphabetizeEffect() {
 		String helloMessage = "The quick brown fox jumps over the lazy dog";
-		mockServer.expect(requestTo("http://basic-app/hello"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/hello"), eq(String.class)))
+				.thenReturn(helloMessage);
 
 		middleManService.setEffect("alphabetize");
 		String result = middleManService.getHelloMessage();
 		assertThat(result).isEqualTo("brown dog fox jumps lazy over quick The the");
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/hello"), eq(String.class));
 	}
 
 	@Test
 	public void testGetHelloMessageWithNoEffect() {
 		String helloMessage = "Hello, John!";
-		mockServer.expect(requestTo("http://basic-app/hello"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(helloMessage, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/hello"), eq(String.class)))
+				.thenReturn(helloMessage);
 
 		middleManService.setEffect("none");
 		String result = middleManService.getHelloMessage();
 		assertThat(result).isEqualTo(helloMessage);
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/hello"), eq(String.class));
 	}
 
 	@Test
 	public void testReverseString() {
 		String input = "hello";
 		String expected = "olleh";
-		mockServer.expect(requestTo("http://basic-app/reverse?input=" + input))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(expected, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/reverse?input=" + input), eq(String.class)))
+				.thenReturn(expected);
 
 		String result = middleManService.reverseString(input);
 		assertThat(result).isEqualTo(expected);
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/reverse?input=" + input), eq(String.class));
 	}
 
 	@Test
 	public void testGetLastReversedString() {
 		String expected = "dlrow";
-		mockServer.expect(requestTo("http://basic-app/lastReversed"))
-				.andExpect(method(HttpMethod.GET))
-				.andRespond(withSuccess(expected, MediaType.TEXT_PLAIN));
+		when(restTemplate.getForObject(eq("http://basic-app/lastReversed"), eq(String.class)))
+				.thenReturn(expected);
 
 		String result = middleManService.getLastReversedString();
 		assertThat(result).isEqualTo(expected);
-		mockServer.verify();
+		verify(restTemplate).getForObject(eq("http://basic-app/lastReversed"), eq(String.class));
 	}
-
 }

@@ -1,6 +1,7 @@
 package com.example.middleman.service;
 
 import com.example.middleman.Effect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,18 +14,21 @@ import java.util.stream.Collectors;
 @Service
 public class MiddleManService {
 
-	private final RestTemplate restTemplate;
-	private final String basicAppUrl;
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@Value("${basicapp.url}")
+	private String basicAppUrl;
 
 	private Effect effect = Effect.NONE;
 
-	public MiddleManService(RestTemplate restTemplate, @Value("${basicapp.url}") String basicAppUrl) {
-		this.restTemplate = restTemplate;
+	public void setBasicAppUrl(String basicAppUrl) {
 		this.basicAppUrl = basicAppUrl;
 	}
 
 	public void setName(String name) {
-		callSetNameOnBasicApp(name);
+		String url = basicAppUrl + "/setName/" + name;
+		restTemplate.postForObject(url, null, String.class);
 	}
 
 	public void setEffect(String effect) {
@@ -34,11 +38,6 @@ public class MiddleManService {
 	public String getHelloMessage() {
 		String helloMessage = callHelloOnBasicApp();
 		return applyEffect(helloMessage);
-	}
-
-	private void callSetNameOnBasicApp(String name) {
-		String url = basicAppUrl + "/setName/" + name;
-		restTemplate.postForObject(url, null, String.class);
 	}
 
 	private String callHelloOnBasicApp() {
